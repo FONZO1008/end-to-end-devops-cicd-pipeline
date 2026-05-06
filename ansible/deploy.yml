@@ -1,0 +1,30 @@
+- hosts: app
+  become: yes
+
+  tasks:
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+
+    - name: Login to ECR
+      shell: |
+        aws ecr get-login-password --region ap-south-1 \
+        | docker login --username AWS --password-stdin {{ image_uri.split('/')[0] }}
+
+    - name: Pull Docker image
+      shell: docker pull {{ image_uri }}
+
+    - name: Stop old container
+      shell: docker stop my-app || true
+
+    - name: Remove old container
+      shell: docker rm my-app || true
+
+    - name: Run new container
+      shell: docker run -d -p 3000:3000 --name my-app {{ image_uri }}
