@@ -12,8 +12,11 @@ pipeline {
   stages {
 
     stage('Checkout Code') {
-      steps {
-        git 'https://github.com/FONZO1008/end-to-end-devops-cicd-pipeline.git'
+  steps {
+    git branch: 'main',
+        url: 'https://github.com/FONZO1008/end-to-end-devops-cicd-pipeline.git'
+  }
+}
       }
     }
 
