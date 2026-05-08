@@ -1,3 +1,3 @@
-output "43.205.194.39" {
-  value = aws_instance.app.public_ip
+output "public_ip" {
+  value = aws_instance.app_server.public_ip
 }
