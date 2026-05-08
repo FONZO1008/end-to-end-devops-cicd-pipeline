@@ -29,7 +29,7 @@ resource "aws_security_group" "app_sg" {
 
 resource "aws_instance" "app_server" {
   ami                    = "ami-0f58b397bc5c1f2e8"
-  instance_type          = "t2.micro"
+  instance_type          = "m7i-flex.large"
   key_name               = "devops-key"
   vpc_security_group_ids = [aws_security_group.app_sg.id]
 
