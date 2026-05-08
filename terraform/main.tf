@@ -37,8 +37,3 @@ resource "aws_instance" "app_server" {
     Name = "DevOps-App-Server"
   }
 }
-
-  tags = {
-    Name = "DevOps-App-Server"
-  }
-}
