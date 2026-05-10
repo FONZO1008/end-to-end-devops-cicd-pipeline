@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'ap-south-1'
-        ECR_REPO = 'my-app'
-        ACCOUNT_ID = '303192503865'
         IMAGE_TAG = "${BUILD_NUMBER}"
-        IMAGE_URI = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
     }
 
     stages {
@@ -20,32 +16,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-app .'
-            }
-        }
-
-        stage('Login to AWS ECR') {
-            steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-credentials'
-                ]]) {
-
-                    sh '''
-                    aws ecr get-login-password --region $AWS_REGION \
-                    | docker login --username AWS --password-stdin \
-                    $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-                    '''
-                }
-            }
-        }
-
-        stage('Tag & Push to ECR') {
-            steps {
-                sh '''
-                docker tag my-app:latest $IMAGE_URI
-                docker push $IMAGE_URI
-                '''
+                sh 'docker build -t my-app:${IMAGE_TAG} .'
             }
         }
 
@@ -89,7 +60,7 @@ pipeline {
                     echo "$EC2_IP ansible_user=ec2-user ansible_ssh_private_key_file=$SSH_KEY" >> ansible/inventory
 
                     ansible-playbook -i ansible/inventory ansible/deploy.yml \
-                    --extra-vars "image_uri=$IMAGE_URI"
+                    --extra-vars "image_tag=$IMAGE_TAG"
                     '''
                 }
             }
