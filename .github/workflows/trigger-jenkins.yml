@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Trigger Jenkins Build
         run: |
-          curl -X POST "http://3.108.5.211:8080/job/devops-pipeline/build?token=mytoken"
+          curl -X POST "http://127.0.0.1:8080/job/devops-pipeline/build?token=mytoken"
