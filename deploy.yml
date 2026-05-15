@@ -1,0 +1,72 @@
+- name: Deploy Docker App
+  hosts: app
+  become: yes
+
+  vars:
+    ecr_registry: "303192503865.dkr.ecr.ap-south-1.amazonaws.com"
+    ecr_repo: "my-app"
+    aws_region: "ap-south-1"
+    # image_tag is passed via --extra-vars from Jenkins
+    image_uri: "{{ ecr_registry }}/{{ ecr_repo }}:{{ image_tag }}"
+
+  tasks:
+
+    - name: Update yum packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Install AWS CLI
+      yum:
+        name: awscli
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Login to AWS ECR
+      shell: |
+        aws ecr get-login-password --region {{ aws_region }} | \
+        docker login --username AWS --password-stdin {{ ecr_registry }}
+
+    - name: Pull latest Docker image
+      shell: docker pull {{ image_uri }}
+
+    - name: Stop existing container
+      shell: docker stop my-app || true
+
+    - name: Remove existing container
+      shell: docker rm my-app || true
+
+    - name: Remove old Docker images
+      shell: docker image prune -af || true
+
+    - name: Run Docker container
+      shell: |
+        docker run -d \
+          --name my-app \
+          -p 3000:3000 \
+          --restart always \
+          {{ image_uri }}
+
+    - name: Verify container is running
+      shell: docker ps
+      register: docker_output
+
+    - name: Show running containers
+      debug:
+        var: docker_output.stdout_lines
