@@ -1,6 +1,6 @@
 # 🚀 End-to-End DevOps CI/CD Pipeline (AWS)
 
-🔗 Repo: https://github.com/FONZO1008/end-to-end-devops-cicd-pipeline
+🔗 Repo: https://github.com/Taneshbad/end-to-end-devops-cicd-pipeline
 
 ---
 
