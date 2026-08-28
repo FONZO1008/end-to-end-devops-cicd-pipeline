@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/FONZO1008/end-to-end-devops-cicd-pipeline.git'
+                    url: 'https://github.com/Taneshbad/end-to-end-devops-cicd-pipeline.git'
             }
         }
 
